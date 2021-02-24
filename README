@@ -1,0 +1,367 @@
+﻿/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\
+|*)       DMO Translator - 1.11 by Dragonlord      (*|
+|*)                  roland@rptd.ch                (*|
+\~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~/
+~~~~~~~~~ __/v \/v v\___/v VVv V\_____/Vv\__ ~~~~~~~~~
+ ~~~~  __/v           V           VvV       V\__  ~~~~ 
+ \  \_/Vv     ____     _       _     ____      V\_/  /
+  |@|          )  \_    \ _|_ /    _/  (          |@|
+  \  \        )_____\_ `>¬.=.¬<´ _/_____(        /  /
+  |**|         )_   / \_/\o=o/\_/ \   _(         |**|
+ / /\ \          )_/__/ \ VvV / \__\_(          / /\ \
+_VV__VV____________VVVv___~*~___vVVV____________VV__VV_
+                      ~@œ¢#8#¢œ@~
+                       ~~~*#*~~~
+                          ~~~
+
+Table of Contents //
+///////////////////
+
+0. Legal Disclaimer
+1. Introduction
+2. Requirements
+3. Installation
+4. Usage
+4.1 First Run
+4.2 Template Creation
+4.3 Translation
+4.4 Gamer Usage
+4.5 Quick Use
+5. Technical Background
+5.1 *.dmot File Format
+6. Credits
+
+
+
+0. Legal Disclaimer //
+/////////////////////
+
+This application is provided only as a tool to translate the
+Digimon Master Online MMO game. This is the one and only intended
+purpose. The author can not be held responsible for misusing or
+incorrectly using the application for any other purpose. The use
+of this application happens on your own risk. The author can not
+be held responsible for any potential damage caused due to the 
+usage of this software.
+
+This application is distribute under the terms of the GNU General
+Public License v2 or later (at your option).
+
+
+
+1. Introduction //
+/////////////////
+
+The DMO Translator is an application designed to help creating
+translations for the MMO Digimon Masters Online. The application
+can be used as well as for creating translations as applying
+translations to a DMO installation.
+
+A warning to begin with. This application can easily destroy the
+resource files rendering the game unusable. Read carefully the
+instructions for the different types of users to make no mistake.
+
+As a gamer you only have to read the gamer usage (4.4) or better
+the quick use (4.5).
+
+
+
+2. Requirements //
+/////////////////
+
+This application has no other requirements than a DMO installation.
+
+
+
+3. Installation //
+/////////////////
+
+Extract the executable/binary into any directory you want and run it.
+
+
+
+4. Usage //
+//////////
+
+This application can be used by 3 different kinds of people to provide
+translations for DMO. These are the template creators, the translators
+and the gamers. For all of them though some usage patterns are the same.
+
+
+
+4.1 First Run //
+///////////////
+
+The first time the application is started the path to the DMO
+installation has to be specified. Simply select the directory where
+the DigimonMasters.exe executable is located. You can change this
+directory later on using the menu point "File"->"Set DMO Path". The
+application only works properly if this path is set correctly.
+
+Once set you can load and save translations like in an ordinary
+application using the "File" menu.
+
+Using the menu point "File"->"Select Unicode Font" you can select a
+font to use to display the resource text. If your system is set to
+support Asien lanuages this should not be required. It can though
+happen a font misses the required characters. In this case you can
+select a font which shows the texts properly. This font selection is
+saved closing the application.
+
+Depending on what kind of person you are different patterns of usage
+exist from here on.
+
+
+
+4.1 Template Creation //
+///////////////////////
+
+At the core DMO stores text resources files in a kind of flat-file
+database structure hence file contain one or more tables of records
+with static column sizes. This allows to quickly read informations
+from the resource files requiring though more disk space and being
+unable to use larger text length than allocated by the developers.
+This application provides a simple interface to define the layout
+of the resource files. Hence instead of using a prehard-coded list
+of file reading routines a generic one is used which can be altered
+using parameters. The following naming is used throughout the
+application.
+
+Translation:
+  The translation is the main object defining a translation for a set
+  of files in the DMO installation. Translations are stored on disk
+  in files with the extension *.dmot and are stored in a binary format
+  the format is given at the end if somebody is interested.
+
+Archive:
+  Translation files are stored in one or more archives. Each archive
+  is stored as two files. One is the data file containing the content
+  of all translation files and typically has *.pf as extension. The
+  second file is the file map and has typically *.hf as extension.
+  The file map stores the offset and size of the individual translation
+  files inside the data file (*.pf). An archive therefore is defined
+  by two path one for the data file and one for the file map file. Both
+  path are relative to the DMO directory. Archive files are typically
+  found in the "Data" directory of your DMO installation.
+  
+File:
+  Each archive composes of a list of files. A file object defines
+  which file a set of translations have to be applied to. The file
+  object stores a display name and the identifier of the file. The
+  identifier is used to locate the file inside the file map.
+
+Section:
+  In each resource file specified in the file object one or more
+  tables of records can exist. Each such table is defined using a
+  section object. The location of the table inside the resource file
+  is given by the section position and the record size. The section
+  position defines the position in bytes from the beginning of the
+  resource file to the start of the table. At this location a 32-bit
+  integer is located storing the number of entries in the table. The
+  record size indicates how many bytes long each record in the table
+  is. Each table has one column which stores a sort of ID value
+  uniquely identifying records. DMO uses single component primary
+  keys so only one such column exists. It is defined using the
+  header id name and the offset. The header id name defines the name
+  of the column in the data table displaying the identifier. The offset
+  defines the position in bytes relative to the start of a record where
+  the identifier is located. Furthermore a list of texts and records
+  is stored
+
+Section Text:
+  Each section has at least one text column. The tables in the resource
+  files contain not only text but for this application only the text
+  columns are interesting. A section text is defined by a header name,
+  an offset and a length. The header name labels the column in the
+  input table. The offset defines the position in bytes relative to the
+  beginning of a record where the text entries start. The length indicates
+  how many characters the text can have at maximum. Texts are stored in
+  different ways in the resource files. Some texts are stored as ASCII
+  character strings with 1 byte per character. These are used for storing
+  file path or code identifiers. They are not interesting for translations.
+  The second type of strings are Wide-Char encoded unicode strings. In these
+  strings each character is 2 bytes long. Hence if you try to figure out
+  the length of a string keep this in mind. A 15 character string occupies
+  therefore exactly 30 characters. This is not a UTF-16 encoding as this
+  one could use more than 2 bytes per character. Since the record size has
+  though to be static Wide-Chars are used. Both kinds of strings are
+  terminated by a 0-character (a character of value 0) except the case
+  where the number of characters in the string equals to the maximum
+  number of characters. In this case no 0-character is stored and the
+  string ends after the maximum number of characters. The application takes
+  care of this for you. More about this in 4.3 section. Section texts only
+  define where the data is located. The actual text entries are stored
+  in the records.
+
+Records:
+  Each section has a list of records. They contain the data stored in the
+  resource files. Each record has a list of variable text strings in the
+  UTF-8 unicode encoding which match in their ordering the ordering of
+  section texts. UTF-8 is used to reduce the disk space consumption as
+  well as being a lot easier to handle by the used ToolKit.
+
+A template creator has to define the archives, files, sections and texts for
+the individual resource files. You can test your template at any time by
+importing data into the active file object. To do this use the
+"Bin-File"->"Import Bin-Files" menu option. This reads the resource file
+specified in the currently displayed file and parses them into records
+which are attached to the sections in the file object. You can choose
+if you want to replace all records with matching identifier with the data
+found in the bin-files or if you want to only add records where identifiers
+are new. For creating a template you usually want to replace them to see
+if your parameters yield proper values. Editing files and sections is
+straight forward. Editing section texts is a bit special. You have to select
+one of the cells in the input table in the column of the section text you
+want to edit. Only then the edit and delete menu options are working.
+
+Once you are finished with the template save it as a *.dmot file. This file
+can then be handed over to the translators to create translations for
+various languages.
+
+
+
+4.3 Translation //
+/////////////////
+
+Translation starts by loading the *.dmot file provided by the template
+creators. Often records are already present but it is a good idea to reload
+them before doing translations. Use the "Bin-File"->"Import Bin-Files" menu
+option for every file in the translation. This import works only on one
+file at the time to avoid unwanted results. Once loaded you can save the
+translation und a different *.dmot file before translating. Now you can go
+ahead and check out all the texts in the individual records replacing the
+text right in the input table. If you happen to enter a string which is
+longer than the maximum number of characters for the given column the cell
+in question is drawn in a redish color. While patching these strings will
+be truncated to the maximum allowed number of characters. To test your
+translation use the "Bin-Files"->"Patch Bin-Files". This will patch ALL
+files defined in the translation. This is different from the import which
+works on only one file at the time. Patching files creates first a backup
+of the resource file with the same name but .bak appended to the end.
+It is better though to create a copy of all files beforehand placing them
+in a save location. After the patching is done a summary is shown. Files
+with an identifier of 0 are skipped as well as files having an identifier
+not found in the file map of the archive they belong to. An additional safety
+mechanism is in place trying to avoid damaging the files if the file layout
+changed. If less than 75% of records in a file do not match the file is
+skipped as this is usually a good sign that the file format changed. This
+will be shown in the summary if this happens. Once you are done with the
+translation you can make them available for gamers to download by saving it
+as a *.dmot file.
+
+
+
+4.4 Gamer Usage //
+/////////////////
+
+Gamers just have to obtain a translated *.dmot file. Load the file into the
+application and use the "Bin-Files"->"Patch Bin-File" menu option. A summary
+will be shown with the result of the operation. If "File not found" entries
+exist you have to set your DMO Path. Skipped files are a sign of problems but
+should keep your data files intact. At worst translations will not be applied
+but damage should not occur. Still though make a backup of your data files
+before applying the translation. Your files are now translated and you can
+close the application and start the game.
+
+
+
+4.5 Quick Use //
+///////////////
+
+- Start DMOTranslator.exe
+- "File"->"Open"
+- Select *.dmot file with translation
+- "Bin-Files"->"Patch Bin-Files"
+- Close summary window
+- Close DMOTranslator.exe
+
+The game is now translated. Happy gaming.
+
+
+
+5. Technical Background //
+/////////////////////////
+
+Some informations of technical aspect. This is only interesting for people
+planing to work with *.dmot files outside the translator application.
+
+
+
+5.1 *.dmot File Format //
+////////////////////////
+
+The file format is a straight forward binary file format. The following
+pseudo-code illustrates the file format.
+
+char => 1-byte unsigned character
+short => 2-byte signed short integer
+int => 4-byte signed integer
+uint => 4-byte unsigned integer
+string => UTF-8 encoded, null terminated string. stored:
+    short byteCount // number of required bytes without 0-terminator
+    char[byteCount] utf8EncodedString
+    char nullTerminator // == 0
+[] => array of elements each packed directly after each other
+
+*.dmot (version 1.3):
+
+char[16] fileSignature // == "DMOTranslation=="
+short versionMajor // == 1
+short versionMinor // == 3
+
+short numberOfArchives
+archives[numberOfArchives]:
+	string name
+	string pathArchive
+	string pathFileMap
+	
+	short numberOfFiles
+	files[numberOfFiles]:
+		string name
+		uint identifier
+		
+		short numberOfSections
+		sections[numberOfSections]:
+			string name
+			int sectionPosition // offset in bytes from the file start to the record count value
+			string headerIDName // name of identifier header in the input table
+			short headerIDWidth // width in pixels of the identifier column in the input table
+			short idPosition // offset in bytes from the record start to the identifier (usually 0)
+			short idType // type of id (0=uint, 1=ushort)
+			short recordSize // size in bytes of the records
+			short paddingType // type of padding required. can be:
+				// 0: no padding. all records have the same size [default]
+				// 1: sequence of uints. paddingCount uint values of value 0 end a record
+				// 2: special NPC. skips a list of uints. the first uint in each entry stores the
+				//    number of uint values to follow. a count value of 0 ends the padding
+				// 3: special Quest. padding consisting of 4 blocks. each block consists of a count and
+				//    that many entries. entry size in the first two blocks are 3 ints, in the other
+				//    two blocks 4 ints (hence 3, 3, 4, 4)
+				// 4: blocks of int32. reads blocks of the form (count,uint[count]) and skips them.
+				//    if the padding count is larger than 0 that many blocks are read and skipped.
+				//    if the padding count is 0 blocks are skipped until a block with 0 count is found.
+			short paddingCount
+			
+			short numberOfTexts
+			texts[numberOfTexts]:
+				string headerName // name of header in the input table
+				short headerWidth // width in pixels of the column in the input table
+				short position // offset in bytes from the record start to the first text character
+				short length // number of maximal characters in the text
+				short format // format of text. can be:
+					// 0: wide char string without 0-terminator [default]
+					// 1: UTF-8 string without 0-terminator
+					// 2: wide char string with 0-terminator if shorter than the length
+					// 3: UTF-8 string with 0-terminator if shorter than the length
+			
+			int numberOfRecords
+			records[numberOfRecords]
+				uint recordIdentifier // identifier value to match records during import/patching
+				string[numberOfTexts] strings // text values in the same order as texts[numberOfTexts]
+
+
+
+6. Credits //
+////////////
+
+For this application the FOX-ToolKit has been used (http://www.fox-toolkit.org).
